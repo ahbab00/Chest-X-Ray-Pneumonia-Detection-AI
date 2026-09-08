@@ -1,8 +1,8 @@
-﻿# Data & model artifacts — never commit these
+# Data & model artifacts
 data/
 dummy_data/
-outputs/
-*.keras
+outputs/*
+!outputs/best_densenet.keras
 *.h5
 *.zip
 
