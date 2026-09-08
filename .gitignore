@@ -1,0 +1,19 @@
+﻿# Data & model artifacts — never commit these
+data/
+dummy_data/
+outputs/
+*.keras
+*.h5
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+*.egg-info/
+
+# OS/editor
+.DS_Store
+.vscode/settings.json
