@@ -1,4 +1,4 @@
-﻿"""
+"""
 evaluate.py - Model evaluation on the held-out test set.
 
 Usage
@@ -91,11 +91,14 @@ def evaluate(data_dir: str, model_path: str) -> None:
     print(f"[eval] ROC curve saved -> {roc_path}")
 
 
+from pathlib import Path
+
 if __name__ == "__main__":
+    PROJECT_ROOT = Path(__file__).resolve().parent.parent
     parser = argparse.ArgumentParser(description="Evaluate a trained pneumonia model.")
-    parser.add_argument("--data_dir",   required=True,
+    parser.add_argument("--data_dir",   default=str(PROJECT_ROOT / "data" / "chest_xray"),
                         help="Root of chest_xray/ dataset.")
-    parser.add_argument("--model_path", required=True,
+    parser.add_argument("--model_path", default=str(PROJECT_ROOT / "outputs" / "best_densenet.keras"),
                         help="Path to saved .keras model file.")
     args = parser.parse_args()
     evaluate(args.data_dir, args.model_path)

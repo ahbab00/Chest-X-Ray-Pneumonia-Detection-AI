@@ -1,4 +1,4 @@
-﻿"""
+"""
 predict.py - Single-image inference script.
 
 Usage
@@ -51,13 +51,29 @@ def predict_single(model_path: str, image_path: str) -> None:
     print()
 
 
+import os
+from pathlib import Path
+
 if __name__ == "__main__":
+    PROJECT_ROOT = Path(__file__).resolve().parent.parent
+    
+    # Default model path
+    default_model = PROJECT_ROOT / "outputs" / "best_densenet.keras"
+    
+    # Try finding an existing sample image from the test set
+    test_dir = PROJECT_ROOT / "data" / "chest_xray" / "test" / "PNEUMONIA"
+    default_image = test_dir / "person100_bacteria_475.jpeg"
+    if not default_image.exists() and test_dir.exists():
+        found = list(test_dir.glob("*.jpeg")) + list(test_dir.glob("*.jpg"))
+        if found:
+            default_image = found[0]
+
     parser = argparse.ArgumentParser(
         description="Run inference on a single chest X-ray image."
     )
-    parser.add_argument("--model_path", required=True,
+    parser.add_argument("--model_path", default=str(default_model),
                         help="Path to saved .keras model file.")
-    parser.add_argument("--image_path", required=True,
+    parser.add_argument("--image_path", default=str(default_image),
                         help="Path to chest X-ray image (JPEG or PNG).")
     args = parser.parse_args()
     predict_single(args.model_path, args.image_path)

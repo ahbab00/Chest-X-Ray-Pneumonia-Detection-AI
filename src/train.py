@@ -1,4 +1,4 @@
-﻿"""
+"""
 train.py - Training entry point.
 
 Usage
@@ -17,12 +17,14 @@ import matplotlib
 matplotlib.use("Agg")          # headless backend -- no display needed
 import matplotlib.pyplot as plt
 
+from pathlib import Path
 import tensorflow as tf
 
 from data  import load_datasets
 from model import build_custom_cnn, build_densenet_model, unfreeze_top
 
-OUTPUT_DIR = "outputs"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+OUTPUT_DIR = str(PROJECT_ROOT / "outputs")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
@@ -87,12 +89,12 @@ def plot_history(history, phase: int = 1, model_name: str = "model"):
 # -- main ---------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser(description="Train a pneumonia-detection CNN.")
-    parser.add_argument("--data_dir",   required=True,
+    parser.add_argument("--data_dir",   default=str(PROJECT_ROOT / "data" / "chest_xray"),
                         help="Root of chest_xray/ dataset (contains train/ and test/).")
     parser.add_argument("--model_type", choices=["cnn", "densenet"],
                         default="densenet",
                         help="'cnn' = custom baseline, 'densenet' = transfer learning.")
-    parser.add_argument("--epochs",     type=int, default=30,
+    parser.add_argument("--epochs",     type=int, default=5,
                         help="Maximum epochs per training phase.")
     parser.add_argument("--val_split",  type=float, default=0.20,
                         help="Fraction of train data reserved for validation.")
