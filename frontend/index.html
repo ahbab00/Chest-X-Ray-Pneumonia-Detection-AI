@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Research-only pneumonia classification demo" />
+    <title>Pneumonia CNN Research Demo</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Pneumonia CNN home">
+        <span class="brand-mark" aria-hidden="true">L</span>
+        <span>Pneumonia CNN</span>
+      </a>
+      <span id="serviceStatus" class="service-status">Checking model…</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Chest X-ray classification</p>
+          <h1>Clear model output,<br /><span>responsibly presented.</span></h1>
+          <p class="hero-copy">
+            Upload a chest radiograph to run the DenseNet121 research model. Images are processed
+            for this request and are not saved by the application.
+          </p>
+        </div>
+        <aside class="notice">
+          <strong>Research use only</strong>
+          <p>This tool is not a medical device and its output is not a diagnosis.</p>
+        </aside>
+      </section>
+
+      <section class="workspace" aria-label="Image analysis workspace">
+        <div class="panel upload-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="step">01 / Image</p>
+              <h2>Select a radiograph</h2>
+            </div>
+            <button id="clearButton" class="text-button" type="button" hidden>Clear</button>
+          </div>
+
+          <label id="dropZone" class="drop-zone" for="imageInput">
+            <input id="imageInput" type="file" accept="image/jpeg,image/png" />
+            <div id="uploadPrompt">
+              <span class="upload-icon" aria-hidden="true">↑</span>
+              <strong>Drop a JPEG or PNG here</strong>
+              <span>or click to browse · maximum 10 MB</span>
+            </div>
+            <img id="preview" alt="Selected chest radiograph preview" hidden />
+          </label>
+
+          <div id="fileMeta" class="file-meta" aria-live="polite"></div>
+          <button id="analyzeButton" class="primary-button" type="button" disabled>
+            Analyze image
+          </button>
+        </div>
+
+        <div class="panel result-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="step">02 / Result</p>
+              <h2>Model assessment</h2>
+            </div>
+          </div>
+
+          <div id="emptyState" class="empty-state">
+            <span aria-hidden="true">◎</span>
+            <p>Your classification result will appear here.</p>
+          </div>
+
+          <div id="loadingState" class="loading-state" hidden>
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Running model inference…</p>
+          </div>
+
+          <div id="result" hidden aria-live="polite">
+            <div id="resultBanner" class="result-banner">
+              <p>Model classification</p>
+              <h3 id="resultLabel"></h3>
+              <span id="resultConfidence"></span>
+            </div>
+
+            <div class="probabilities">
+              <div class="probability-row">
+                <div><span>Normal</span><strong id="normalValue"></strong></div>
+                <div class="track"><span id="normalBar"></span></div>
+              </div>
+              <div class="probability-row">
+                <div><span>Pneumonia</span><strong id="pneumoniaValue"></strong></div>
+                <div class="track"><span id="pneumoniaBar"></span></div>
+              </div>
+            </div>
+
+            <p id="disclaimer" class="result-disclaimer"></p>
+          </div>
+
+          <div id="errorMessage" class="error-message" role="alert" hidden></div>
+        </div>
+      </section>
+
+      <section class="metrics-section">
+        <div>
+          <p class="eyebrow">Evidence</p>
+          <h2>Evaluation tied to the deployed model</h2>
+        </div>
+        <div id="metrics" class="metrics-grid">
+          <p class="metrics-empty">No verified evaluation metrics are available.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>DenseNet121 transfer-learning prototype</span>
+      <span>Educational and research use only</span>
+    </footer>
+  </body>
+</html>

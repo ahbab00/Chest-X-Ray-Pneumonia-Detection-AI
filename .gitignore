@@ -8,11 +8,13 @@ outputs/*
 
 # Python
 __pycache__/
+.pytest_cache/
 *.pyc
 .venv/
 venv/
 env/
 *.egg-info/
+server.*.log
 
 # OS/editor
 .DS_Store

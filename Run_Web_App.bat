@@ -4,13 +4,11 @@ echo ===================================================
 echo   Starting Pneumonia Detection Web App...
 echo ===================================================
 echo.
-echo  Access on this PC:   http://localhost:8501
-echo  Access on your Phone: http://192.168.1.4:8501
-echo  (Phone must be connected to the SAME Wi-Fi!)
+echo  Access locally: http://127.0.0.1:8501
 echo ===================================================
 echo.
 cd /d "%~dp0"
 call .venv\Scripts\activate.bat
-start "" "http://localhost:8501"
-streamlit run app.py --server.address 0.0.0.0 --server.headless true
+start "" "http://127.0.0.1:8501"
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8501
 pause

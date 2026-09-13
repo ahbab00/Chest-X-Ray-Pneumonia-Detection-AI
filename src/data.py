@@ -1,13 +1,16 @@
-import os
+from pathlib import Path
 import numpy as np
 import tensorflow as tf
 from sklearn.utils.class_weight import compute_class_weight
 
-IMG_SIZE = (224, 224)
+try:  # Supports both `python src/train.py` and package imports.
+    from .inference import CLASS_NAMES, IMG_SIZE
+except ImportError:  # pragma: no cover - exercised by command-line scripts
+    from inference import CLASS_NAMES, IMG_SIZE
+
 BATCH_SIZE = 32
 AUTOTUNE = tf.data.AUTOTUNE
 SEED = 42
-CLASS_NAMES = ["NORMAL", "PNEUMONIA"]
 
 
 def build_augmentation_layer() -> tf.keras.Sequential:
@@ -19,9 +22,17 @@ def build_augmentation_layer() -> tf.keras.Sequential:
     ], name="augmentation")
 
 
-def load_datasets(data_dir: str, val_split: float = 0.20):
-    train_root = os.path.join(data_dir, "train")
-    test_root = os.path.join(data_dir, "test")
+def load_datasets(data_dir: str, val_split: float = 0.20, batch_size: int = BATCH_SIZE):
+    """Load deterministic train/validation/test datasets from the expected layout."""
+    if not 0 < val_split < 1:
+        raise ValueError("val_split must be greater than 0 and less than 1.")
+
+    data_root = Path(data_dir)
+    train_root = data_root / "train"
+    test_root = data_root / "test"
+    missing = [str(path) for path in (train_root, test_root) if not path.is_dir()]
+    if missing:
+        raise FileNotFoundError(f"Dataset directories not found: {', '.join(missing)}")
 
     # -- training split (80%) -------------------------------------------------
     train_ds = tf.keras.utils.image_dataset_from_directory(
@@ -30,7 +41,7 @@ def load_datasets(data_dir: str, val_split: float = 0.20):
         subset="training",
         seed=SEED,
         image_size=IMG_SIZE,
-        batch_size=BATCH_SIZE,
+        batch_size=batch_size,
         label_mode="binary",   # single float 0.0 / 1.0
         shuffle=True,
     )
@@ -42,7 +53,7 @@ def load_datasets(data_dir: str, val_split: float = 0.20):
         subset="validation",
         seed=SEED,
         image_size=IMG_SIZE,
-        batch_size=BATCH_SIZE,
+        batch_size=batch_size,
         label_mode="binary",
         shuffle=False,
     )
@@ -50,7 +61,7 @@ def load_datasets(data_dir: str, val_split: float = 0.20):
     test_ds = tf.keras.utils.image_dataset_from_directory(
         test_root,
         image_size=IMG_SIZE,
-        batch_size=BATCH_SIZE,
+        batch_size=batch_size,
         label_mode="binary",
         shuffle=False,
     )

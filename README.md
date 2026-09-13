@@ -1,6 +1,6 @@
 # 🩺 Pneumonia Detection from Chest X-Rays
 
-A deep learning-based medical image classification system that detects **Pneumonia** from chest X-ray radiographs using **Transfer Learning with DenseNet121**. The project includes model training, evaluation, inference, and a production-ready Streamlit web application.
+A deep learning-based research prototype that classifies chest X-ray radiographs for a **pneumonia signal** using transfer learning with DenseNet121. It includes training, evaluation, a FastAPI backend, and a responsive HTML/CSS/JavaScript frontend.
 
 ---
 
@@ -29,7 +29,9 @@ The model is trained on the Kaggle Chest X-Ray Pneumonia dataset and achieves st
 
 ✅ Single Image Prediction CLI
 
-✅ Interactive Streamlit Web Application
+✅ Responsive HTML/CSS/JavaScript Web Interface
+
+✅ FastAPI Prediction API
 
 ✅ Ready-to-Deploy Deep Learning Pipeline
 
@@ -56,19 +58,15 @@ The final model uses **DenseNet121** pretrained on **ImageNet**.
 
 ---
 
-## 📊 Results
+## 📊 Results and Reproducibility
 
-### Test Set Performance
+Metrics must be generated against the exact model and test dataset being used:
 
-| Metric                         | Score      |
-| ------------------------------ | ---------- |
-| ROC-AUC                        | **0.9546** |
-| Accuracy                       | **86.1%**  |
-| Pneumonia Recall (Sensitivity) | **96.7%**  |
+```bash
+python src/evaluate.py --data_dir data/chest_xray --model_path outputs/best_densenet.keras
+```
 
-### ROC Performance
-
-A ROC-AUC score of **0.9546** indicates excellent separability between pneumonia and normal chest X-rays.
+This writes `outputs/metrics.json`, `outputs/confusion_matrix.png`, and `outputs/roc_curve.png`. The web app displays metrics only when they are tied to its deployed model. Do not reuse results from a different dataset split, model, or threshold.
 
 ---
 
@@ -98,15 +96,26 @@ https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia
 ```text
 pneumonia_cnn/
 
-├── app.py
+├── backend/
+│   ├── main.py
+│   ├── schemas.py
+│   └── services/
+│       └── model_service.py
+├── frontend/
+│   ├── index.html
+│   ├── styles.css
+│   └── app.js
 ├── requirements.txt
 ├── samples/
 ├── src/
+│   ├── inference.py
 │   ├── data.py
 │   ├── model.py
 │   ├── train.py
 │   ├── evaluate.py
 │   └── predict.py
+├── tests/
+│   └── test_inference.py
 └── outputs/
     └── best_densenet.keras
 ```
@@ -120,7 +129,8 @@ pneumonia_cnn/
 | train.py    | Training pipeline                     |
 | evaluate.py | Evaluation metrics and visualizations |
 | predict.py  | Single image inference                |
-| app.py      | Streamlit application                 |
+| backend/    | FastAPI endpoints and model service   |
+| frontend/   | Browser interface and image preview   |
 
 ---
 
@@ -158,6 +168,15 @@ source .venv/bin/activate
 
 ```bash
 pip install -r requirements.txt
+```
+
+Python 3.11–3.13 is supported. Python 3.14 is currently unsuitable for this project's TensorFlow setup. Create and activate a virtual environment before installing dependencies.
+
+### Verify the Project
+
+```bash
+python -m compileall -q backend src tests
+pytest -q
 ```
 
 ---
@@ -214,12 +233,12 @@ Confidence: 98.2%
 
 ---
 
-## 🌐 Streamlit Web Application
+## 🌐 Web Application
 
 Launch the web interface:
 
 ```bash
-streamlit run app.py
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8501
 ```
 
 Features:
@@ -229,6 +248,8 @@ Features:
 * Confidence score display
 * Sample X-ray testing
 * User-friendly interface
+
+By default the app listens only on `127.0.0.1` and limits uploads to 10 MB. Do not expose it to a network without authentication, TLS, privacy controls, and a security review.
 
 ---
 
@@ -241,7 +262,8 @@ Features:
 * Pandas
 * Matplotlib
 * Scikit-learn
-* Streamlit
+* FastAPI and Uvicorn
+* HTML, CSS, and JavaScript
 
 ---
 
@@ -257,7 +279,7 @@ Features:
 
 ## ⚠️ Disclaimer
 
-This project is intended for educational and research purposes only. It should not be used as a substitute for professional medical diagnosis.
+This project is intended for education and research only. It is not a certified medical device, does not diagnose pneumonia, and must not be used as a substitute for a qualified clinician or radiologist. The model may be wrong, may not generalize to other populations or imaging devices, and must not be used with patient data without appropriate privacy and governance controls.
 
 ---
 

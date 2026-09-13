@@ -1,23 +1,26 @@
 import argparse
-import os
 from pathlib import Path
-import numpy as np
 from PIL import Image
 import tensorflow as tf
 
-from data import IMG_SIZE, CLASS_NAMES
+try:  # Supports both `python src/predict.py` and package imports.
+    from .inference import DEFAULT_THRESHOLD, classify_probability, prepare_image
+except ImportError:  # pragma: no cover - exercised by command-line scripts
+    from inference import DEFAULT_THRESHOLD, classify_probability, prepare_image
 
 
-def predict_single(model_path: str, image_path: str):
+def predict_single(model_path: str, image_path: str, threshold: float = DEFAULT_THRESHOLD):
+    if not Path(model_path).is_file():
+        raise FileNotFoundError(f"Model not found: {model_path}")
+    if not Path(image_path).is_file():
+        raise FileNotFoundError(f"Image not found: {image_path}")
     model = tf.keras.models.load_model(model_path)
 
-    img = Image.open(image_path).convert("RGB").resize(IMG_SIZE)
-    arr = np.array(img, dtype=np.float32) / 255.0
-    arr = np.expand_dims(arr, axis=0)
+    with Image.open(image_path) as image:
+        arr = prepare_image(image)
 
     prob = float(model.predict(arr, verbose=0)[0][0])
-    predicted_class = CLASS_NAMES[int(prob >= 0.5)]
-    confidence = prob if prob >= 0.5 else (1.0 - prob)
+    predicted_class, confidence = classify_probability(prob, threshold)
 
     print(f"\nImage: {image_path}")
     print(f"Prediction: {predicted_class}")
@@ -39,6 +42,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Inference on chest X-ray image")
     parser.add_argument("--model_path", default=str(default_model))
     parser.add_argument("--image_path", default=str(default_image))
+    parser.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
     args = parser.parse_args()
-    predict_single(args.model_path, args.image_path)
+    predict_single(args.model_path, args.image_path, args.threshold)
 
